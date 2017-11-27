@@ -1,6 +1,7 @@
 package com.example.sohyun_mac.pj1;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -128,13 +129,14 @@ public class MainActivity extends AppCompatActivity {
         showLocationMethod();
     }
 
+    @SuppressLint("HandlerLeak")
     public void showLocationMethod(){
         mHandler = new Handler(){
             @Override
             public void handleMessage(Message msg){
                 if(msg.what==RENEW_GPS){
                     makeNewGpsService();
-                    if(isIndoor == false){
+                    if(!isIndoor){
                         indoorText.setText("실외입니다" + " 시작시간으로부터 걸린시간 : "+(current-startTime)/1000+" 걸린시간 : " + (enteringTime - current) / 1000+ "network 수신횟수 : "+netCount);
                     }
                     else{
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                         Thread.sleep(1000);
                     }
                     catch(InterruptedException e){
-
+                        e.printStackTrace();
                     }
                     mHandler.sendEmptyMessage(1);
                 }
@@ -236,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     save.add(provider);
                 }
                 if(save.contains("gps")){
-                    if(isIndoor == true){
+                    if(isIndoor){
                         enteringTime = loc.getTime();
                     }
                     isIndoor = false;
@@ -255,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
                     save.remove(0);
                     save.add(provider);
                     if(!save.contains("gps")){
-                        if(isIndoor==false){
+                        if(!isIndoor){
                             enteringTime = loc.getTime();
                         }
                         isIndoor = true;
